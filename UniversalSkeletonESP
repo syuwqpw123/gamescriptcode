@@ -1,0 +1,204 @@
+if not executed_already then
+
+    if game.PlaceId == 292439477 then -- 팬텀포스 드가면 팬텀포스용으로 실행됨
+        local replication;
+
+        for i,v in next, getgc(true) do
+            if type(v) == "table" and rawget(v,'getbodyparts') then
+                replication = v;
+            end
+        end
+
+        local characterparts = debug.getupvalue(replication.getbodyparts, 1)
+        local player = game:GetService("Players").LocalPlayer
+
+        function updater()
+            for person,bodyparts in next, characterparts do
+                local character = bodyparts['head'].Parent;
+                if not person.Character or character.Name ~= person.Name then
+                    character.Name = person.Name;
+                    person.Character = character;
+                end
+            end
+            local character = player.Character;
+            if character and character.Name == "Player" then
+                character.Name = player.Name;
+            end
+        end
+
+        game:GetService("RunService"):BindToRenderStep("CharacterUpdater", 1, updater)
+    end
+
+    getgenv().executed_already = true;
+    getgenv().skeleton_esp = true;
+    local plrs = game:GetService("Players")
+    local localplayer = plrs.LocalPlayer;
+    local camera = game:GetService("Workspace").CurrentCamera;
+    local enemy_color = Color3.fromRGB(255, 100, 100)
+    local team_color = Color3.fromRGB(100, 255, 100)
+
+    local function createESP(plr)
+        local shead = Drawing.new("Line")
+        shead.Thickness = 1;
+        shead.Color = enemy_color;
+
+        local srarm = Drawing.new("Line")
+        srarm.Thickness = 1;
+        srarm.Color = enemy_color;
+
+        local slarm = Drawing.new("Line")
+        slarm.Thickness = 1;
+        slarm.Color = enemy_color;
+
+        local srleg = Drawing.new("Line")
+        srleg.Thickness = 1;
+        srleg.Color = enemy_color;
+
+        local slleg = Drawing.new("Line")
+        slleg.Thickness = 1;
+        slleg.Color = enemy_color;
+
+        local name = plr.Name;
+
+        function esp_func()
+            if not skeleton_esp then
+                if shead.Visible then
+                    shead.Visible = false;
+                end
+                if srarm.Visible then
+                    srarm.Visible = false;
+                end
+                if slarm.Visible then
+                    slarm.Visible = false;
+                end
+                if srleg.Visible then
+                    srleg.Visible = false;
+                end
+                if slleg.Visible then
+                    slleg.Visible = false;
+                end
+                return;
+            end
+            if plr then
+                if not localplayer.Character then shead.Visible = false; srarm.Visible = false; slarm.Visible = false; srleg.Visible = false; slleg.Visible = false; return end
+                if not plr.Character then shead.Visible = false; srarm.Visible = false; slarm.Visible = false; srleg.Visible = false; slleg.Visible = false; return end
+                if not plr.Character.Head then shead.Visible = false; srarm.Visible = false; slarm.Visible = false; srleg.Visible = false; slleg.Visible = false; return end
+                if (camera.CFrame.p - plr.Character.Head.CFrame.p).magnitude >= 1500 then shead.Visible = false; srarm.Visible = false; slarm.Visible = false; srleg.Visible = false; slleg.Visible = false; return end
+
+                local char = plr.Character;
+
+                local head = char["Head"];
+                local torso = char["Torso"];
+                local rarm = char["Right Arm"];
+                local larm = char["Left Arm"];
+                local rleg = char["Right Leg"];
+                local lleg = char["Left Leg"];
+                local p1 = head.CFrame.Position;
+                local p2 = torso.CFrame.Position;
+                local p3 = rarm.CFrame.Position;
+                local p4 = larm.CFrame.Position;
+                local p5 = rleg.CFrame.Position;
+                local p6 = lleg.CFrame.Position;
+
+                local sp1,v1 = camera:WorldToViewportPoint(p1)
+                local sp2,v2 = camera:WorldToViewportPoint(p2)
+                local sp3,v3 = camera:WorldToViewportPoint(p3)
+                local sp4,v4 = camera:WorldToViewportPoint(p4)
+                local sp5,v5 = camera:WorldToViewportPoint(p5)
+                local sp6,v6 = camera:WorldToViewportPoint(p6)
+
+                if skeleton_esp and v1 then
+                    shead.From = Vector2.new(sp1.X, sp1.Y)
+                    shead.To = Vector2.new(sp2.X, sp2.Y)
+
+                    srarm.From = Vector2.new(sp2.X, sp2.Y)
+                    srarm.To = Vector2.new(sp3.X, sp3.Y)
+
+                    slarm.From = Vector2.new(sp2.X, sp2.Y)
+                    slarm.To = Vector2.new(sp4.X, sp4.Y)
+
+                    srleg.From = Vector2.new(sp2.X, sp2.Y)
+                    srleg.To = Vector2.new(sp5.X, sp5.Y)
+
+                    slleg.From = Vector2.new(sp2.X, sp2.Y)
+                    slleg.To = Vector2.new(sp6.X, sp6.Y)
+
+                    shead.Visible = true;
+                    srarm.Visible = true;
+                    slarm.Visible = true;
+                    srleg.Visible = true;
+                    slleg.Visible = true;
+                elseif not v1 then
+                    shead.Visible = false;
+                    srarm.Visible = false;
+                    slarm.Visible = false;
+                    srleg.Visible = false;
+                    slleg.Visible = false;
+                end
+
+                if plr.Team ~= localplayer.Team and shead.Color == team_color then
+                    shead.Color = enemy_color;
+                elseif plr.Team == localplayer.Team and shead.Color == enemy_color then
+                    shead.Color = team_color;
+                end
+
+                if plr.Team ~= localplayer.Team and srarm.Color == team_color then
+                    srarm.Color = enemy_color;
+                elseif plr.Team == localplayer.Team and srarm.Color == enemy_color then
+                    srarm.Color = team_color;
+                end
+
+                if plr.Team ~= localplayer.Team and slarm.Color == team_color then
+                    slarm.Color = enemy_color;
+                elseif plr.Team == localplayer.Team and slarm.Color == enemy_color then
+                    slarm.Color = team_color;
+                end
+
+                if plr.Team ~= localplayer.Team and srleg.Color == team_color then
+                    srleg.Color = enemy_color;
+                elseif plr.Team == localplayer.Team and srleg.Color == enemy_color then
+                    srleg.Color = team_color;
+                end
+
+                if plr.Team ~= localplayer.Team and slleg.Color == team_color then
+                    slleg.Color = enemy_color;
+                elseif plr.Team == localplayer.Team and slleg.Color == enemy_color then
+                    slleg.Color = team_color;
+                end
+            else
+                game:GetService("RunService"):UnbindFromRenderStep("ESP_" .. name)
+                shead.Visible = false;
+                shead:Destroy()
+
+                srarm.Visible = false;
+                srarm:Destroy()
+
+                slarm.Visible = false;
+                slarm:Destroy()
+
+                srleg.Visible = false;
+                srleg:Destroy()
+
+                slleg.Visible = false;
+                slleg:Destroy()
+            end
+        end
+
+        game:GetService("RunService"):BindToRenderStep("ESP_" .. name, 1, esp_func)
+    end
+
+
+    for _,plr in next, plrs:GetPlayers() do
+        if plr ~= localplayer then
+            createESP(plr)
+        end
+    end
+
+    plrs.PlayerAdded:connect(function(plr)
+        createESP(plr)
+    end)
+
+    return;
+end
+
+skeleton_esp = not skeleton_esp;
